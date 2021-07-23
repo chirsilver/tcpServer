@@ -4,7 +4,8 @@
 
 void* foo(void *args) {
     TLVPacket *packet = (TLVPacket*)args;
-    printf("this thread is run: type:%s, length:%d, data:%s", packet->type, packet->length, packet->value);
+    printf("this thread is run: type:%d, length:%d, data:%s", packet->type, packet->length, packet->value);
+    return nullptr;
 }
 
 int main() {

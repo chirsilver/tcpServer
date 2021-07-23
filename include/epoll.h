@@ -17,10 +17,10 @@ public:
     ~Epoll();
     int epoll_init(int servfd, epoll_event *event);
     int epoll_run();
-    int handle_events(int cnt);
     int add_event(int fd, epoll_event *event);
     int mod_event(int fd, epoll_event *event);
     int del_event(int fd, epoll_event *event);
+    epoll_event* get_events();
 };
 
 #endif

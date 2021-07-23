@@ -1,15 +1,9 @@
 #include "threadpoll.h"
 
-Threadpoll::Threadpoll(int thread_cnt) {
-    if(thread_cnt > THREADS) {
-        thread_cnt = -1;
-        fprintf(stderr, "ERROR: Too many threads to init.\n");
-        assert(thread_cnt <= THREADS);
-    }
-    this->thread_cnt = thread_cnt;
+Threadpoll::Threadpoll() {
+    thread_cnt = 1;
     this->task_cnt = 0;
-    this->task_que_head = nullptr;
-    this->task_que_tail = nullptr;
+    this->tasks = nullptr;
     this->threads = nullptr;
 }
 
@@ -22,7 +16,11 @@ void Threadpoll::destory() {
     stat = STOP;
     mutex.unlock();
     cond.bordcast();
-
+    while(tasks != nullptr) {
+        Task *task = tasks;
+        tasks = tasks->nxt;
+        delete task;
+    }
     for(int i = 0; i < thread_cnt; i++) {
         void *res;
         pthread_join(threads[i], &res);
@@ -31,6 +29,7 @@ void Threadpoll::destory() {
 
 void *start_routine(void *args) {
     Threadpoll *tp = (Threadpoll*)args;
+    printf("thread is run\n");
     tp->threadpoll_exec();
     return nullptr;
 }
@@ -55,25 +54,31 @@ void Threadpoll::threadpoll_exec() {
     Task *tk = nullptr;
     while(1) {
         mutex.lock();
-        while(stat == START && task_que_head != nullptr) {
+        while(stat == STOP || tasks == nullptr) {
             cond.wait(&mutex);
         }
         if(stat == STOP) {
             mutex.unlock();
             pthread_exit(nullptr);
         }
-        tk = task_que_head;
-        task_que_head->set_next(task_que_head->next());
-        mutex.unlock();
-        tk->run();
-        delete tk;
+        else if(tasks == nullptr) {
+            mutex.unlock();
+        }
+        else {
+            tk = tasks;
+            tasks = tasks->nxt;
+            mutex.unlock();
+            tk->run();
+            delete tk;
+        }
     }
 }
 
 void Threadpoll::add_task(Task *task) {
     mutex.lock();
-    task_que_tail->set_next(task);
-    task_que_tail = task;
+    Task *tk = tasks;
+    while(tk != nullptr) tk = tk->nxt;
+    tk = task;
     mutex.unlock();
     cond.signal();
 }

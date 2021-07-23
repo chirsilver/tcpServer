@@ -7,6 +7,10 @@ int Epoll::epoll_init(int servfd, epoll_event *event) {
     return add_event(listenfd, event);
 }
 
+Epoll::~Epoll() {
+    close(epfd);
+}
+
 int Epoll::epoll_run() {
     return epoll_wait(epfd, events, MAX_EPOLL_EVENTS, -1);
 }
@@ -23,6 +27,6 @@ int Epoll::del_event(int fd, epoll_event *event) {
     return epoll_ctl(epfd, EPOLL_CTL_DEL, fd, event);
 }
 
-Epoll::~Epoll() {
-    close(epfd);
+epoll_event* Epoll::get_events() {
+    return events;
 }
