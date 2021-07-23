@@ -1,14 +1,13 @@
 #ifndef _TLVPACKET_H_
 #define _TLVPACKET_H_
 
-#include "define.inc"
+#define DATASIZE 1024
 
-enum TLVType {
-    DATA = 1, OTHER
-};
+#define DATA 1
+#define OTHER 2
 
 struct TLVPacket {
-    TLVType type;
+    int type;
     int length;
     char value[DATASIZE];
 };
