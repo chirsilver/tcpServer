@@ -3,8 +3,8 @@
 Threadpoll::Threadpoll() {
     thread_cnt = 1;
     this->task_cnt = 0;
-    this->tasks = nullptr;
     this->threads = nullptr;
+    while(!que.empty()) que.pop();
 }
 
 Threadpoll::~Threadpoll() {
@@ -16,10 +16,9 @@ void Threadpoll::destory() {
     stat = STOP;
     mutex.unlock();
     cond.bordcast();
-    while(tasks != nullptr) {
-        Task *task = tasks;
-        tasks = tasks->nxt;
-        delete task;
+    while(!que.empty()) {
+        Task *tk = que.front();
+        delete tk;
     }
     for(int i = 0; i < thread_cnt; i++) {
         void *res;
@@ -54,19 +53,19 @@ void Threadpoll::threadpoll_exec() {
     Task *tk = nullptr;
     while(1) {
         mutex.lock();
-        while(stat == STOP || tasks == nullptr) {
+        printf("%s, %s\n", (stat == STOP)?"STOP":"START", (que.empty())?"nullptr":"other");
+        while(stat == STOP || que.empty()) {
             cond.wait(&mutex);
         }
         if(stat == STOP) {
             mutex.unlock();
             pthread_exit(nullptr);
         }
-        else if(tasks == nullptr) {
+        else if(que.empty()) {
             mutex.unlock();
         }
         else {
-            tk = tasks;
-            tasks = tasks->nxt;
+            tk = que.front();
             mutex.unlock();
             tk->run();
             delete tk;
@@ -76,9 +75,7 @@ void Threadpoll::threadpoll_exec() {
 
 void Threadpoll::add_task(Task *task) {
     mutex.lock();
-    Task *tk = tasks;
-    while(tk != nullptr) tk = tk->nxt;
-    tk = task;
+    que.push(task);
     mutex.unlock();
     cond.signal();
 }

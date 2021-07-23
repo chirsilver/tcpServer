@@ -9,7 +9,6 @@ public:
     Task(void *(prograss)(void *args), void *args);
     ~Task();
     void* run();
-    Task* nxt;
 };
 
 #endif

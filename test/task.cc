@@ -3,7 +3,6 @@
 Task::Task(void *(prograss)(void *args), void *args) {
     this->prograss = prograss;
     this->args = args;
-    nxt = nullptr;
 }
 
 Task::~Task() {}

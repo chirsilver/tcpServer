@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include <assert.h>
 #include <pthread.h>
+#include <queue>
 
 #define THREADS 100
 #define DEFAULT_THREADS 10
@@ -19,7 +20,7 @@ private:
     int thread_cnt;
     Mutex mutex;
     Cond cond;
-    Task *tasks;
+    std::queue<Task*> que;
     pthread_t *threads;
 
     bool stat;
