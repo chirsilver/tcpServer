@@ -1,6 +1,7 @@
 #ifndef _COND_H_
 #define _COND_H_
 
+#include "mutex.h"
 #include <pthread.h>
 
 class Cond {
@@ -9,9 +10,9 @@ private:
 public:
     Cond();
     ~Cond();
-    void wait(pthread_mutex_t *mutex);
-    void signal();
-    void bordcast();
+    int wait(Mutex *mutex);
+    int signal();
+    int bordcast();
 };
 
 #endif

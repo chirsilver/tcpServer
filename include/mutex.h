@@ -8,11 +8,11 @@ private:
     pthread_mutex_t mutex;
     bool is_locked;
 public:
-    Mutex(){};
-    ~Mutext(){};
-    void lock();
-    void unlock();
-    pthread_mutex_t *get_mutex_pointer();
-}
+    Mutex();
+    ~Mutex();
+    int lock();
+    int unlock();
+    pthread_mutex_t* get_mutex_pointer();
+};
 
 #endif
