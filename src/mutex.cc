@@ -1,34 +1,29 @@
 #include "mutex.h"
 
 Mutex::Mutex() {
-    pthread_mutex_init(&this->mutex, nullptr);
+    pthread_mutex_init(&mutex, nullptr);
     is_locked = false;
 }
 
 Mutex::~Mutex() {
-    while(is_locked) unlock();
-    pthread_mutex_destroy(&this->mutex);
+    if(is_locked) {
+        unlock();
+    }
+    pthread_mutex_destroy(&mutex);
 }
 
 int Mutex::lock() {
+    int ret = pthread_mutex_lock(&mutex);
     is_locked = true;
-    return pthread_mutex_lock(&this->mutex);
+    return ret;
 }
 
 int Mutex::unlock() {
+    int ret = pthread_mutex_unlock(&mutex);
     is_locked = false;
-    return pthread_mutex_unlock(&this->mutex);
-}
-
-int Mutex::trylock() {
-    is_locked = true;
-    return pthread_mutex_trylock(&this->mutex);
-}
-
-bool Mutex::get_stat() {
-    return is_locked;
+    return ret;
 }
 
 pthread_mutex_t* Mutex::get_mutex_pointer() {
-    return &this->mutex;
+    return &mutex;
 }

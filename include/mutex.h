@@ -12,9 +12,7 @@ public:
     ~Mutex();
     int lock();
     int unlock();
-    int trylock();
-    bool get_stat();
-    pthread_mutex_t *get_mutex_pointer();
+    pthread_mutex_t* get_mutex_pointer();
 };
 
 #endif

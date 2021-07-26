@@ -2,10 +2,9 @@
 #define _TLVPACKET_H_
 
 #define DATASIZE 1024
-
 #define DATA 1
-#define OTHER 2
-#define ERROR 3
+#define ERROR 2
+#define OTHER 3
 
 struct TLVPacket {
     int type;
